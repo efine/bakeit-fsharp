@@ -14,17 +14,18 @@
  *  limitations under the License.
  *)
 
-module BIni
+module IniParser
 
-open 
+open FParsec
+
 type INIContents = (string * (string * string) list) list
 
 type INIFile =
     | Error of string
     | Values of INIContents
 
-module INI =
-    let parse (ini: string) : INIFile =
+
+let parse (ini: string) : INIFile =
         let clearNone v = List.fold (fun x y -> match y with None -> x | Some(z) -> z :: x) [] v
         let escape =
             pchar '\\' >>.
@@ -42,13 +43,12 @@ module INI =
                 do! skipRestOfLine true
                 return None
             | None ->
-                let! name = many1 (noneOf [' ';'[';']';'=']) .>> spaces .>> skipChar '='
-                let! value = (many <| skipChar ' ') >>. many (noneOf ['\n';'\\'] <|> escape)
+                let! name = many1 (noneOf [' '; '['; ']'; '=']) .>> spaces .>> skipChar '='
+                let! value = (many <| skipChar ' ') >>. many (noneOf ['\n'; '\\'] <|> escape)
                 do! skipRestOfLine true
-                let name = String.Concat(name)
-                let value = String.Concat(value).Trim()
-                return Some(name, value)
+                return Some(System.String.Concat(name), System.String.Concat(value).Trim())
         }
+
         let sectionParser: Parser<(string * (string * string) list) option, unit> = parse {
             do! spaces
             let! comment = opt <| skipChar '#'
@@ -57,12 +57,11 @@ module INI =
                 do! skipRestOfLine true
                 return None
             | None ->
-                let! section = spaces >>. skipChar '[' >>. many1 (noneOf [' ';'[';']']) .>> skipChar ']' .>> skipRestOfLine true
+                let! section = spaces >>. skipChar '[' >>. many1 (noneOf [' '; '['; ']']) .>> skipChar ']' .>> skipRestOfLine true
                 let! values = many valueParser
-                let section = String.Concat(section)
-                let values = clearNone values
-                return Some(String.Concat(section), values)
+                return Some(System.String.Concat(section), clearNone values)
         }
+
         match run (many sectionParser) ini with
         | Success (v, _, _) -> Values(clearNone v)
-        | Failure (msg, err, _) -> Error(String.Format("There was a problem parsing the settings file:\n{0}", msg))
+        | Failure (msg, _err, _) -> Error("There was a problem parsing the settings file:\n" + msg)

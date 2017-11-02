@@ -2,7 +2,9 @@ module GetOpts
 
 open DocoptNet
 
-let getopts (argv : string[]) =
+type Opts = Map<string, ValueObject>
+
+let getopts (argv : string[]) : Opts =
     let usage = @"Bakeit.
 
 Usage:
