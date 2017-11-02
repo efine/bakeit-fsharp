@@ -2,6 +2,7 @@
 
 open GetOpts
 open Upload
+open System
 
 #if REMOVE_THIS
 
@@ -31,16 +32,16 @@ let optAsBool (opts: Opts) key =
     | x when x.IsFalse -> false
     | x -> failwithf "%s is not a bool: %A" key x
 
-[<EntryPoint>]
-let main argv =
+
+let run argv =
     let api_key = Ini.read()
     let opts = getopts argv
     opts |> Map.iter (fun k v -> printfn "%s : %A" k v)
 
-//    let file_name = optAsStr opts "<filename>"
+    let file_name = optAsStr opts "<filename>"
 
     let cfg = { Upload.defaultCfg with
-                    Data = "";
+                    Data = "<There was actually no data in this paste>";
                     ApiKey = api_key;
                     Title = optAsStr opts "--title";
                     Language = optAsStr opts "--language";
@@ -49,5 +50,21 @@ let main argv =
                     OpenBrowser = optAsBool opts "--open-browser" }
 
     printfn "cfg = %A" cfg
+
+    let response = upload cfg
+
+    printfn "Response = %A" response
+
     System.Console.ReadLine() |> ignore
     0
+
+
+[<EntryPoint>]
+let main argv =
+    try
+        run argv
+    with
+    | exc ->
+        printfn "%s" exc.Message
+        printf "%s" exc.StackTrace
+        1
