@@ -70,6 +70,12 @@
     <Compile Include="GetOpts.fs">
       <Link>GetOpts.fs</Link>
     </Compile>
+    <Compile Include="..\..\..\..\Music\OsDetection.fs">
+      <Link>OsDetection.fs</Link>
+    </Compile>
+    <Compile Include="WebBrowser.fs">
+      <Link>WebBrowser.fs</Link>
+    </Compile>
     <None Include="App.config" />
     <Content Include="packages.config" />
     <None Include="T4DocoptNet.tt.settings.xml" />

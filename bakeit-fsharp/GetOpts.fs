@@ -12,11 +12,11 @@ Usage:
     
 Options:
   -h, --help                  Show this help.
-  -t <t>, --title=<t>         The title of the paste.
-  -l <l>, --language=<l>      The language highlighter to use.
-  -d <d>, --duration=<d>      The duration (in minutes) before the paste expires.
-  -v <v>, --max-views=<v>     How many times this paste can be viewed before it expires.
-  -b, --open-browser          Automatically open a browser window when done.
+  -t <t>, --title=<t>         The title of the paste [default: false].
+  -l <l>, --language=<l>      The language highlighter to use [default: text].
+  -d <d>, --duration=<d>      The duration (in minutes) before the paste expires [default: 1440].
+  -v <v>, --max-views=<v>     How many times this paste can be viewed before it expires [default: 20].
+  -b, --open-browser          Automatically open a browser window when done [default: false].
   -V, --version               Show the version and quit.
 
 "

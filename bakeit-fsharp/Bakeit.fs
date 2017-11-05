@@ -1,27 +1,10 @@
 ﻿module Bakeit
 
+open System
 open GetOpts
 open Upload
-open System
-
-#if REMOVE_THIS
-
-type BakeItArg =
-    | StrArg of string
-    | UIntArg of uint32
-    | BoolArg of bool
-    | ListArg of seq<string>
-
-let lookup (opts: Opts) key =
-    match opts.Item(key) with
-    | it when it.IsInt -> UIntArg (uint32 <| it.AsInt)
-    | it when it.IsString -> StrArg (string <| it)
-    | it when it.IsTrue -> BoolArg true
-    | it when it.IsFalse -> BoolArg false
-    | it when it.IsList -> ListArg (Seq.cast<string> <| it.AsList)
-    | it -> failwithf "Unexpected option type for %A" it
-
- #endif
+open WebBrowser
+open System.Reflection
 
 let optAsStr (opts: Opts) key = string <| (opts.Item(key)).Value
 let optAsUInt (opts: Opts) key = uint32 <| (opts.Item(key)).AsInt
@@ -32,30 +15,38 @@ let optAsBool (opts: Opts) key =
     | x when x.IsFalse -> false
     | x -> failwithf "%s is not a bool: %A" key x
 
-
 let run argv =
     let api_key = Ini.read()
     let opts = getopts argv
     opts |> Map.iter (fun k v -> printfn "%s : %A" k v)
 
-    let file_name = optAsStr opts "<filename>"
+    let file_name () = optAsStr opts "<filename>"
+
+    let read_data f =
+        if f = "-" then 
+            stdin.ReadToEnd()
+        else
+            System.IO.File.ReadAllText(f)
+
+    let title = match optAsStr opts "--title" with
+                | "" | "false"  -> file_name()
+                | str -> str
 
     let cfg = { Upload.defaultCfg with
-                    Data = "<There was actually no data in this paste>";
+                    Data = read_data <| file_name ();
                     ApiKey = api_key;
-                    Title = optAsStr opts "--title";
+                    Title = title;   
                     Language = optAsStr opts "--language";
                     Duration = optAsUInt opts "--duration";
                     MaxViews = optAsUInt opts "--max-views";
                     OpenBrowser = optAsBool opts "--open-browser" }
 
-    printfn "cfg = %A" cfg
-
     let response = upload cfg
 
-    printfn "Response = %A" response
+    printfn "%s" response.Url
+    if cfg.OpenBrowser then
+        open_url response.Url
 
-    System.Console.ReadLine() |> ignore
     0
 
 

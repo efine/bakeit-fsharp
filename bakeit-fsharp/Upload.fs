@@ -54,6 +54,7 @@ module Upload
         let err = PasteryError.Parse(body |> bodyAsString)
         sprintf "%s: %s" err.Result err.ErrorMsg
 
+    [<Literal>] 
     let PASTERY_URL = @"https://www.pastery.net/api/paste/"
 
     let err_too_big () =
