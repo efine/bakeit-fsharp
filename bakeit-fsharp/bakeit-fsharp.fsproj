@@ -71,7 +71,7 @@
     <Compile Include="GetOpts.fs">
       <Link>GetOpts.fs</Link>
     </Compile>
-    <Compile Include="..\..\..\..\Music\OsDetection.fs">
+    <Compile Include="OsDetection.fs">
       <Link>OsDetection.fs</Link>
     </Compile>
     <Compile Include="WebBrowser.fs">
@@ -79,11 +79,10 @@
     </Compile>
     <None Include="App.config" />
     <Content Include="packages.config" />
-    <None Include="T4DocoptNet.tt.settings.xml" />
-    <None Include="T4DocoptNet.tt.hooks.t4" />
-    <None Include="T4DocoptNet.tt" />
-    <Content Include="Main.usage.txt" />
     <Compile Include="Bakeit.fs" />
+    <Compile Include="OsDetection.fs">
+      <Link>OsDetection.fs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="DocoptNet">
