@@ -13,7 +13,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.1.0</TargetFSharpCoreVersion>
     <Name>bakeit-fsharp</Name>
-    <ReferencePath>C:\Users\efine\source\repos\bakeit-fsharp\bakeit-fsharp\packages\FParsec.1.0.3\lib\net40-client\;C:\Users\efine\source\repos\bakeit-fsharp\bakeit-fsharp\packages\docopt.net.0.6.1.9\lib\net40\;C:\Users\efine\source\repos\bakeit-fsharp\bakeit-fsharp\packages\FSharp.Core.4.0.0.1\;C:\Users\efine\source\repos\bakeit-fsharp\bakeit-fsharp\packages\FSharp.Data.2.4.2\;C:\Users\efine\source\repos\bakeit-fsharp\bakeit-fsharp\packages\System.ValueTuple.4.3.1\</ReferencePath>
+    <ReferencePath>C:\Users\efine\source\repos\bakeit-fsharp\bakeit-fsharp\packages\FParsec.1.0.3\lib\net40-client\;C:\Users\efine\source\repos\bakeit-fsharp\bakeit-fsharp\packages\docopt.net.0.6.1.9\lib\net40\;C:\Users\efine\source\repos\bakeit-fsharp\bakeit-fsharp\packages\FSharp.Core.4.0.0.1\;C:\Users\efine\source\repos\bakeit-fsharp\bakeit-fsharp\packages\FSharp.Data.2.4.2\</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -26,7 +26,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
-    <StartArguments>-t BakeIt -l fs -d 1440 -v 10</StartArguments>
+    <StartArguments>-g #-t BakeIt-FSharp -l fsharp -d 1440 -v 10 GetOpts.fs</StartArguments>
+    <StartWorkingDirectory>C:\Users\efine\source\repos\bakeit-fsharp\bakeit-fsharp\</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

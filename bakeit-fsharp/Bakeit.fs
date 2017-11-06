@@ -4,48 +4,67 @@ open System
 open GetOpts
 open Upload
 open WebBrowser
-open System.Reflection
 
-let optAsStr (opts: Opts) key = string <| (opts.Item(key)).Value
-let optAsUInt (opts: Opts) key = uint32 <| (opts.Item(key)).AsInt
-let optAsList (opts: Opts) key = (opts.Item(key)).AsList
-let optAsBool (opts: Opts) key =
-    match opts.Item(key) with
-    | x when x.IsTrue -> true
-    | x when x.IsFalse -> false
-    | x -> failwithf "%s is not a bool: %A" key x
+let optItem (opts: Opts) key = opts.Item(key)
+
+let toString (item : DocoptNet.ValueObject) = string item.Value
+
+let toUInt (item : DocoptNet.ValueObject) = uint32 item.AsInt
+
+let toList (item : DocoptNet.ValueObject) = item.AsList
+
+let toBool (item : DocoptNet.ValueObject) =
+    match item with
+    | _ when item.IsTrue -> true
+    | _ when item.IsFalse -> false
+    | _ -> failwithf "Not a bool: %A" item        
 
 let run argv =
+    let debug = false
     let api_key = Ini.read()
     let opts = getopts argv
-    opts |> Map.iter (fun k v -> printfn "%s : %A" k v)
+    if debug then opts |> Map.iter (fun k v -> printfn "%s : %A" k v)
 
-    let file_name () = optAsStr opts "<filename>"
+    let lookup = optItem opts
+
+    let file_name () = "<filename>" |> lookup |> toString
 
     let read_data f =
-        if f = "-" then 
-            stdin.ReadToEnd()
+        match f with
+        | "-" -> stdin.ReadToEnd()
+        | _ -> System.IO.File.ReadAllText(f)
+
+    let title () = match "--title" |> lookup |> toString with
+                   | "" | "false"  -> file_name.ToString()
+                   | str -> str
+
+    let make_cfg () =
+        if "--get-pastes" |> lookup |> toBool then
+            { Upload.defaultCfg with
+                    GetPastes = true;
+                    ApiKey    = api_key
+           }
         else
-            System.IO.File.ReadAllText(f)
+            { Upload.defaultCfg with
+                    Data        = read_data <| file_name ();
+                    ApiKey      = api_key;
+                    Title       = title ();   
+                    Language    = "--language" |> lookup |> toString;
+                    Duration    = "--duration" |> lookup |> toUInt;
+                    MaxViews    = "--max-views" |> lookup |> toUInt;
+                    OpenBrowser = "--open-browser" |> lookup |> toBool
+            }
 
-    let title = match optAsStr opts "--title" with
-                | "" | "false"  -> file_name()
-                | str -> str
 
-    let cfg = { Upload.defaultCfg with
-                    Data = read_data <| file_name ();
-                    ApiKey = api_key;
-                    Title = title;   
-                    Language = optAsStr opts "--language";
-                    Duration = optAsUInt opts "--duration";
-                    MaxViews = optAsUInt opts "--max-views";
-                    OpenBrowser = optAsBool opts "--open-browser" }
 
-    let response = upload cfg
-
-    printfn "%s" response.Url
-    if cfg.OpenBrowser then
-        open_url response.Url
+    let cfg = make_cfg ()
+    if cfg.GetPastes then
+        printfn "%s" <| get_pastes cfg
+    else
+        let url = upload cfg
+        printfn "%s" url
+        if cfg.OpenBrowser then
+            open_url url
 
     0
 
